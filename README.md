@@ -1,2 +1,17 @@
-# daikan58
-安鑫看房 - 吉林房地产网站
+# daikan58.cn
+
+Jilin Real Estate Platform
+
+## Tech Stack
+
+- React + TypeScript
+- Vite
+- Tailwind CSS
+- shadcn/ui
+
+## Deploy
+
+```bash
+npm install
+npm run build
+```
