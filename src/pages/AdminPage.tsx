@@ -3,7 +3,7 @@ import { Lock, LayoutDashboard, Building2, Plus, Edit2, Trash2, Search, LogOut, 
 import { Property, properties as seedData } from '../data/mockData';
 import PropertyForm from '../components/PropertyForm';
 
-const ADMIN_PASSWORD = 'admin888'; // 后台管理密码
+const ADMIN_PASSWORD = 'admin888'; // 后台管理密码（已移除默认提示 20260412）
 
 const STORAGE_KEY = 'daikan_admin_properties';
 
