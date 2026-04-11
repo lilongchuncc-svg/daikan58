@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Lock, LayoutDashboard, Building2, Plus, Edit2, Trash2, Search, LogOut, Eye, Home } from 'lucide-react';
+import { Lock, LayoutDashboard, Building2, Plus, Edit2, Trash2, Search, LogOut, Eye, Home, Download, Upload } from 'lucide-react';
 import { Property, properties as seedData } from '../data/mockData';
 import PropertyForm from '../components/PropertyForm';
 
@@ -33,6 +33,38 @@ export default function AdminPage() {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('全部');
   const [filterDistrict, setFilterDistrict] = useState('全部');
+  const [importMsg, setImportMsg] = useState('');
+
+  const handleExport = () => {
+    const blob = new Blob([JSON.stringify(properties, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `daikan_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        if (!Array.isArray(data)) throw new Error('格式错误');
+        saveProperties(data);
+        setProperties(data);
+        setImportMsg(`✅ 成功导入 ${data.length} 条数据！`);
+        setTimeout(() => setImportMsg(''), 3000);
+      } catch {
+        setImportMsg('❌ 导入失败：文件格式错误');
+        setTimeout(() => setImportMsg(''), 3000);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
 
   useEffect(() => {
     if (loggedIn) {
@@ -201,6 +233,14 @@ export default function AdminPage() {
             <button onClick={handleAdd} className="inline-flex items-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
               <Plus size={16} /> 添加房源
             </button>
+            <button onClick={handleExport} className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+              <Download size={16} /> 导出数据
+            </button>
+            <label className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors cursor-pointer">
+              <Upload size={16} /> 导入数据
+              <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+            </label>
+            {importMsg && <span className="text-sm font-medium">{importMsg}</span>}
             <div className="flex-1 min-w-[200px]" />
             <div className="flex items-center gap-2">
               <Search size={16} className="text-gray-400" />
